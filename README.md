@@ -1,10 +1,16 @@
 <h2 align="center">Fastest Pancakeswap Sniper BOT TORNADO CASH 2022-V1 (MAC WINDOWS ANDROID LINUX)</h2>
 <h3 align="center">⭐️ AUTO BUY TOKEN ON LAUNCH AFTER ADD LIQUIDITY ⭐️</h3>
 
-<h3 align="center">⭐️ Support Uniswap Matic BSC ⭐️</h3>
-
 <h3 align="center">⭐️ First SNIPER BOT for MAC & ANDROID & WINDOWS with honeypot detector ⭐️</h3>
-<h3 align="center">A fully decentralized protocol for private and safe transactions </h3>
+
+# VERSION 2 CHANGES : 
+### 4X Faster with cython
+### Fix bug BUY token After add LIQUIDITY
+### Fix bug on android 11 (bug:close after start)
+### Now you can set SLIPPAGE 0.1 
+### ADD Auto SLIPPAGE
+
+<h3 align="center">⭐️ Support Uniswap Matic BSC ⭐️</h3>
 
 
 ![alt text](https://github.com/pythonGui/Fastest-Pancakeswap-Web3-Bot--MAC-WIN-ANDROID-LINUX/blob/main/TornadoCash.png?raw=true "GIF application")
