@@ -3,12 +3,12 @@
 
 <h3 align="center">⭐️ First SNIPER BOT for MAC & ANDROID & WINDOWS with honeypot detector ⭐️</h3>
 
-# VERSION 2 CHANGES : 
-## 4X Faster with cython
-## Fix bug BUY token After add LIQUIDITY
-## Fix bug on android 11 (bug:close after start)
-## Now you can set SLIPPAGE 0.1 
-## ADD Auto SLIPPAGE
+#### VERSION 2 CHANGES : 
+#### 4X Faster with cython
+#### Fix bug BUY token After add LIQUIDITY
+#### Fix bug on android 11 (bug:close after start)
+#### Now you can set SLIPPAGE 0.1 
+#### ADD Auto SLIPPAGE
 
 <h3 align="center">⭐️ Support Uniswap Matic BSC ⭐️</h3>
 
