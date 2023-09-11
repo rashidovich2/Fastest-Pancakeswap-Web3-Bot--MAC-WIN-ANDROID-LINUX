@@ -17,11 +17,11 @@ class TXN():
     def connect(self):
         with open("./Settings.json") as f:
             keys = json.load(f)
-        if keys["RPC"][:2].lower() == "ws":
-            w3 = Web3(Web3.WebsocketProvider(keys["RPC"]))
-        else:
-            w3 = Web3(Web3.HTTPProvider(keys["RPC"]))
-        return w3
+        return (
+            Web3(Web3.WebsocketProvider(keys["RPC"]))
+            if keys["RPC"][:2].lower() == "ws"
+            else Web3(Web3.HTTPProvider(keys["RPC"]))
+        )
 
     def setupGas(self):
         with open("./Settings.json") as f:
@@ -32,9 +32,9 @@ class TXN():
         with open("./Settings.json") as f:
             keys = json.load(f)
         if len(keys["metamask_address"]) <= 41:
-            print(style.RED +"Set your Address in the keys.json file!" + style.RESET)
+            print(f"{style.RED}Set your Address in the keys.json file!{style.RESET}")
         if len(keys["metamask_private_key"]) <= 42:
-            print(style.RED +"Set your PrivateKey in the keys.json file!"+ style.RESET)
+            print(f"{style.RED}Set your PrivateKey in the keys.json file!{style.RESET}")
         return keys["metamask_address"], keys["metamask_private_key"]
 
     def setupSlippage(self):
@@ -58,20 +58,16 @@ class TXN():
     def setup_token(self):
         with open("./abis/bep20_abi_token.json") as f:
             contract_abi = json.load(f)
-        token_contract = self.w3.eth.contract(address=self.token_address, abi=contract_abi)
-        return token_contract
+        return self.w3.eth.contract(address=self.token_address, abi=contract_abi)
 
     def get_token_balance(self): 
         return self.token_contract.functions.balanceOf(self.address).call() / (10 ** self.token_contract.functions.decimals().call())
 
     def checkToken(self):
         tokenInfos = self.swapper.functions.getTokenInfos(self.token_address).call()
-        buy_tax = round((tokenInfos[0] - tokenInfos[1]) / tokenInfos[0] * 100) 
+        buy_tax = round((tokenInfos[0] - tokenInfos[1]) / tokenInfos[0] * 100)
         sell_tax = round((tokenInfos[2] - tokenInfos[3]) / tokenInfos[2] * 100)
-        if tokenInfos[5] and tokenInfos[6] == True:
-            honeypot = False
-        else:
-            honeypot = True
+        honeypot = not tokenInfos[5] or tokenInfos[6] != True
         return buy_tax, sell_tax, honeypot
 
     def estimateGas(self, txn):
@@ -127,35 +123,31 @@ class TXN():
     def is_approve(self):
         Approve = self.token_contract.functions.allowance(self.address ,self.swapper_address).call()
         Aproved_quantity = self.token_contract.functions.balanceOf(self.address).call()
-        if int(Approve) <= int(Aproved_quantity):
-            return False
-        else:
-            return True
+        return int(Approve) > int(Aproved_quantity)
 
     def approve(self):
-        if self.is_approve() == False:
-            txn = self.token_contract.functions.approve(
-                self.swapper_address,
-                115792089237316195423570985008687907853269984665640564039457584007913129639935 # Max Approve
-            ).buildTransaction(
-                {'from': self.address, 
-                'gas': 100000,
-                'gasPrice': self.gas_price,
-                'nonce': self.w3.eth.getTransactionCount(self.address), 
-                'value': 0}
-                )
-            txn.update({ 'gas' : int(self.estimateGas(txn))})
-            signed_txn = self.w3.eth.account.sign_transaction(
-                txn,
-                self.private_key
-            )
-            txn = self.w3.eth.sendRawTransaction(signed_txn.rawTransaction)
-            print(style.GREEN + "\nApprove Hash:",txn.hex()+style.RESET)
-            txn_receipt = self.w3.eth.waitForTransactionReceipt(txn)   
-            if txn_receipt["status"] == 1: return True,style.GREEN +"\nApprove Successfull!"+ style.RESET
-            else: return False, style.RED +"\nApprove Transaction Faild!"+ style.RESET
-        else:
+        if self.is_approve() != False:
             return True, style.GREEN +"\nAllready approved!"+ style.RESET
+        txn = self.token_contract.functions.approve(
+            self.swapper_address,
+            115792089237316195423570985008687907853269984665640564039457584007913129639935 # Max Approve
+        ).buildTransaction(
+            {'from': self.address, 
+            'gas': 100000,
+            'gasPrice': self.gas_price,
+            'nonce': self.w3.eth.getTransactionCount(self.address), 
+            'value': 0}
+            )
+        txn.update({ 'gas' : int(self.estimateGas(txn))})
+        signed_txn = self.w3.eth.account.sign_transaction(
+            txn,
+            self.private_key
+        )
+        txn = self.w3.eth.sendRawTransaction(signed_txn.rawTransaction)
+        print(style.GREEN + "\nApprove Hash:",txn.hex()+style.RESET)
+        txn_receipt = self.w3.eth.waitForTransactionReceipt(txn)
+        if txn_receipt["status"] == 1: return True,style.GREEN +"\nApprove Successfull!"+ style.RESET
+        else: return False, style.RED +"\nApprove Transaction Faild!"+ style.RESET
 
     def sell_tokens(self):
         self.approve()

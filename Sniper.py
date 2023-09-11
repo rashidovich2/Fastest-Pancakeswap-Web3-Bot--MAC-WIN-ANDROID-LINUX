@@ -42,35 +42,71 @@ class SniperBot():
 
     def SayWelcome(self):
         print(style().YELLOW + ascii+ style().RESET)
-        print(style().GREEN +"""TORANADO CASH"""+ style().RESET)
-        print(style().GREEN +"Start Sniper Tool with following arguments:"+ style().RESET)
-        print(style().BLUE + "---------------------------------"+ style().RESET)
-        print(style().YELLOW + "Amount for Buy:",style().GREEN + str(self.amount) + " BNB"+ style().RESET)
-        print(style().YELLOW + "Token to Interact :",style().GREEN + str(self.token) + style().RESET)
-        print(style().YELLOW + "Transaction to send:",style().GREEN + str(self.tx)+ style().RESET)
-        print(style().YELLOW + "Amount per transaction :",style().GREEN + str("{0:.8f}".format(self.amountForSnipe))+ style().RESET)
-        print(style().YELLOW + "Await Blocks before buy :",style().GREEN + str(self.wb)+ style().RESET)
+        print(f"""{style().GREEN}TORANADO CASH{style().RESET}""")
+        print(
+            f"{style().GREEN}Start Sniper Tool with following arguments:{style().RESET}"
+        )
+        print(f"{style().BLUE}---------------------------------{style().RESET}")
+        print(
+            f"{style().YELLOW}Amount for Buy:",
+            style().GREEN + str(self.amount) + " BNB" + style().RESET,
+        )
+        print(
+            f"{style().YELLOW}Token to Interact :",
+            style().GREEN + str(self.token) + style().RESET,
+        )
+        print(
+            f"{style().YELLOW}Transaction to send:",
+            style().GREEN + str(self.tx) + style().RESET,
+        )
+        print(
+            f"{style().YELLOW}Amount per transaction :",
+            style().GREEN + "{0:.8f}".format(self.amountForSnipe) + style().RESET,
+        )
+        print(
+            f"{style().YELLOW}Await Blocks before buy :",
+            style().GREEN + str(self.wb) + style().RESET,
+        )
         if self.tsl != 0:
-            print(style().YELLOW + "Trailing Stop loss Percent :",style().GREEN + str(self.tsl)+ style().RESET)
+            print(
+                f"{style().YELLOW}Trailing Stop loss Percent :",
+                style().GREEN + str(self.tsl) + style().RESET,
+            )
         if self.tp != 0:
-            print(style().YELLOW + "Take Profit Percent :",style().GREEN + str(self.tp)+ style().RESET)
-            print(style().YELLOW + "Target Output for Take Profit:",style().GREEN +str("{0:.8f}".format(self.takeProfitOutput))+ style().RESET)
+            print(
+                f"{style().YELLOW}Take Profit Percent :",
+                style().GREEN + str(self.tp) + style().RESET,
+            )
+            print(
+                f"{style().YELLOW}Target Output for Take Profit:",
+                style().GREEN
+                + "{0:.8f}".format(self.takeProfitOutput)
+                + style().RESET,
+            )
         if self.sl != 0:
-            print(style().YELLOW + "Stop loss Percent :",style().GREEN + str(self.sl)+ style().RESET)
-            print(style().YELLOW + "Sell if Output is smaller as:",style().GREEN +str("{0:.8f}".format(self.stoploss))+ style().RESET)
-        print(style().BLUE + "---------------------------------"+ style().RESET)
+            print(
+                f"{style().YELLOW}Stop loss Percent :",
+                style().GREEN + str(self.sl) + style().RESET,
+            )
+            print(
+                f"{style().YELLOW}Sell if Output is smaller as:",
+                style().GREEN + "{0:.8f}".format(self.stoploss) + style().RESET,
+            )
+        print(f"{style().BLUE}---------------------------------{style().RESET}")
         
     def parseArgs(self):
         self.token = args.token
-        if self.token == None:
-            print(style.RED+"Please Check your Token argument e.g. -t 0x34faa80fec0233e045ed4737cc152a71e490e2e3")
+        if self.token is None:
+            print(
+                f"{style.RED}Please Check your Token argument e.g. -t 0x34faa80fec0233e045ed4737cc152a71e490e2e3"
+            )
             print("exit!")
             sys.exit()
         self.amount = args.amount
-        if args.nobuy != True:  
-            if not args.sellonly: 
+        if args.nobuy != True:
+            if not args.sellonly:
                 if self.amount == 0:
-                    print(style.RED+"Please Check your Amount argument e.g. -a 0.01")
+                    print(f"{style.RED}Please Check your Amount argument e.g. -a 0.01")
                     print("exit!")
                     sys.exit()
         self.tx = args.txamount
@@ -78,7 +114,7 @@ class SniperBot():
         self.hp = args.honeypot
         self.wb = args.awaitBlocks
         self.tp = args.takeprofit
-        self.sl = args.stoploss 
+        self.sl = args.stoploss
         self.tsl = args.trailingstoploss
         self.stoploss = 0
         self.takeProfitOutput = 0
@@ -89,23 +125,20 @@ class SniperBot():
 
     def calcProfit(self):
         a = ((self.amountForSnipe * self.tx) * self.tp) / 100
-        b = a + (self.amountForSnipe * self.tx)
-        return b 
+        return a + (self.amountForSnipe * self.tx) 
     
     def calcloss(self):
         a = ((self.amountForSnipe * self.tx) * self.sl) / 100
-        b = (self.amountForSnipe * self.tx) - a
-        return b 
+        return (self.amountForSnipe * self.tx) - a 
 
     def calcNewTrailingStop(self, currentPrice):
         a = (currentPrice  * self.tsl) / 100
-        b = currentPrice - a
-        return b
+        return currentPrice - a
 
     def awaitBuy(self):
         spinner = Halo(text='await Buy', spinner=spinneroptions)
         spinner.start()
-        for i in range(self.tx):
+        for _ in range(self.tx):
             spinner.start()
             self.TXN = TXN(self.token, self.amountForSnipe)
             tx = self.TXN.buy_token()
@@ -145,7 +178,7 @@ class SniperBot():
             if self.TXN.getBlockHigh() > waitForBlock:
                 spinner.stop()
                 break
-        print(style().GREEN+"[DONE] Wait Blocks finish!")
+        print(f"{style().GREEN}[DONE] Wait Blocks finish!")
         
 
     def awaitLiquidity(self):
@@ -163,7 +196,7 @@ class SniperBot():
                     sys.exit()
                 continue
 
-        print(style().GREEN+"[DONE] Liquidity is Added!"+ style().RESET)
+        print(f"{style().GREEN}[DONE] Liquidity is Added!{style().RESET}")
     
     def awaitMangePosition(self):
         highestLastPrice = 0
@@ -176,30 +209,40 @@ class SniperBot():
                     highestLastPrice = LastPrice
                     TrailingStopLoss = self.calcNewTrailingStop(LastPrice)
                 if LastPrice < TrailingStopLoss:
-                    print(style().GREEN+"[TRAILING STOP LOSS] Triggert!"+ style().RESET)
+                    print(f"{style().GREEN}[TRAILING STOP LOSS] Triggert!{style().RESET}")
                     self.awaitSell()
                     break
             if self.takeProfitOutput != 0:
                 if LastPrice >= self.takeProfitOutput:
                     print()
-                    print(style().GREEN+"[TAKE PROFIT] Triggert!"+ style().RESET)
+                    print(f"{style().GREEN}[TAKE PROFIT] Triggert!{style().RESET}")
                     self.awaitSell()
                     break
             if self.stoploss != 0:
                 if LastPrice <= self.stoploss:
                     print()
-                    print(style().GREEN+"[STOP LOSS] Triggert!"+ style().RESET)
+                    print(f"{style().GREEN}[STOP LOSS] Triggert!{style().RESET}")
                     self.awaitSell()
                     break
-            msg = str("Token Balance: " + str("{0:.5f}".format(TokenBalance)) + "| CurrentOutput: "+str("{0:.7f}".format(LastPrice))+"BNB")
+            msg = str(
+                "Token Balance: "
+                + "{0:.5f}".format(TokenBalance)
+                + "| CurrentOutput: "
+                + "{0:.7f}".format(LastPrice)
+                + "BNB"
+            )
             if self.stoploss != 0:
-                msg = msg + "| Stop loss below: " + str("{0:.7f}".format(self.stoploss)) + "BNB"
+                msg = f"{msg}| Stop loss below: " + "{0:.7f}".format(self.stoploss) + "BNB"
             if self.takeProfitOutput != 0:
-                msg = msg + "| Take Profit Over: " + str("{0:.7f}".format(TrailingStopLoss)) + "BNB"
+                msg = f"{msg}| Take Profit Over: " + "{0:.7f}".format(TrailingStopLoss) + "BNB"
             if self.tsl != 0:  
-                msg = msg + "| Trailing Stop loss below: " + str("{0:.7f}".format(TrailingStopLoss)) + "BNB"
+                msg = (
+                    f"{msg}| Trailing Stop loss below: "
+                    + "{0:.7f}".format(TrailingStopLoss)
+                    + "BNB"
+                )
             print(msg, end="\r")
-        print(style().GREEN+"[DONE] Position Manager Finished!"+ style().RESET)
+        print(f"{style().GREEN}[DONE] Position Manager Finished!{style().RESET}")
 
 
     def StartUP(self):
@@ -210,10 +253,7 @@ class SniperBot():
             inp = input("please confirm y/n\n")
             if inp.lower() == "y": 
                 print(self.TXN.sell_tokens()[1])
-                sys.exit()
-            else:
-                sys.exit()
-
+            sys.exit()
         if args.buyonly:
             print(f"Start BuyOnly, buy now with {self.amountForSnipe}BNB tokens!")
             print(self.TXN.buy_token()[1])
@@ -224,21 +264,21 @@ class SniperBot():
 
         honeyTax = self.TXN.checkToken()
         if self.hp == True:
-            print(style().YELLOW +"Checking Token is Honeypot..." + style().RESET)
+            print(f"{style().YELLOW}Checking Token is Honeypot...{style().RESET}")
 
             if honeyTax[2] == True:
-                print(style.RED + "Token is Honeypot, exiting")
+                print(f"{style.RED}Token is Honeypot, exiting")
                 sys.exit() 
 
             elif honeyTax[2] == False:
-                print(style().GREEN +"[DONE] Token is NOT a Honeypot!" + style().RESET)
+                print(f"{style().GREEN}[DONE] Token is NOT a Honeypot!{style().RESET}")
 
         if honeyTax[1] > self.settings["MaxSellTax"]:
-            print(style().RED+"Token SellTax exceeds Settings.json, exiting!")
+            print(f"{style().RED}Token SellTax exceeds Settings.json, exiting!")
             sys.exit()
 
         if honeyTax[0] > self.settings["MaxBuyTax"]:
-            print(style().RED+"Token BuyTax exceeds Settings.json, exiting!")
+            print(f"{style().RED}Token BuyTax exceeds Settings.json, exiting!")
             sys.exit()
 
         if self.wb != 0: 
@@ -252,6 +292,6 @@ class SniperBot():
         if self.tsl != 0 or self.stoploss != 0 or self.takeProfitOutput != 0:
             self.awaitMangePosition()
 
-        print(style().GREEN + "[DONE]TORNADO CASH FINISH!" + style().RESET)
+        print(f"{style().GREEN}[DONE]TORNADO CASH FINISH!{style().RESET}")
 
 SniperBot().StartUP()
